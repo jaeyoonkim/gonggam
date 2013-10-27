@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  root: 1
+  parent: 1
+  title: MyString
+  artist: MyString
+  link: MyString
+  type: 
+
+two:
+  root: 1
+  parent: 1
+  title: MyString
+  artist: MyString
+  link: MyString
+  type: 

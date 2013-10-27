@@ -24,6 +24,8 @@ Gongam::Application.routes.draw do
   #       get 'sold'
   #     end
   #   end
+  resources :nodes
+  resources :links
 
   get '/canvas' => 'main#index'
   get '/dge' => 'main#directed'

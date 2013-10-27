@@ -1,6 +1,9 @@
 <style>
+.world {
+  border: 1px solid #eee;
+}
 svg {
-  background-color: #FFF;
+  background-color: #fff;
   cursor: default;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -8,7 +11,6 @@ svg {
   -o-user-select: none;
   user-select: none;
 }
-
 svg:not(.active):not(.ctrl) {
   //cursor: crosshair;
 }
@@ -87,6 +89,32 @@ text.id {
 
 <!-- Button to trigger modal -->
 <!-- Modal -->
+<a class="btn btn-large" href="javascript:modeControlOn();" id="control_btn_on">Control:Off</a>
+<a class="btn btn-large btn-danger" href="javascript:modeControlOff();" id="control_btn_off">Control:On</a>
+<a class="btn btn-large" href="javascript:releaseAllNodes();" id="release_btn_on">Dynamic Nodes:Off</a>
+<a class="btn btn-large btn-danger" href="javascript:fixAllNodes();" id="release_btn_off">Dynamic Nodes:On</a>
+<script>
+  $("#control_btn_off").hide();
+  $("#control_btn_on").click(function(){
+    $(this).hide();
+    $("#control_btn_off").show();
+  })
+  $("#control_btn_off").click(function(){
+    $(this).hide();
+    $("#control_btn_on").show();
+  })
+  $("#release_btn_on").hide();
+  $("#release_btn_on").click(function(){
+    $(this).hide();
+    $("#release_btn_off").show();
+  })
+  $("#release_btn_off").click(function(){
+    $(this).hide();
+    $("#release_btn_on").show();
+  })
+</script>
+<div class="world" id="world"></div>
+
 <div id="infobox" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</a>
@@ -149,11 +177,11 @@ var link_dist = 60;
 $("#infobox").modal('hide')
 $("#infopopup").modal('hide')
 // set up SVG for D3
-var width  = 960,
-    height = 700,
+var width  = 900,
+    height = 500,
     colors = d3.scale.category10();
 
-var svg = d3.select('body')
+var svg = d3.select('#world')
   .append('svg')
   .attr('width', width)
   .attr('height', height);
@@ -162,58 +190,160 @@ var svg = d3.select('body')
 //  - nodes are known by 'id', not by index in array.
 //  - reflexive edges are indicated on the node (as a bold black circle).
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
-var nodes = [
+
+//get nodes
+
+var nodes = [],
+  lastNodeId = 0,
+  links = [];
+
+var dynamic_node_mode = false;
+var control_mode = false;
+function modeControlOff()
+{
+  control_mode = false;
+  circle
+    .on('mousedown.drag', null)
+    .on('touchstart.drag', null);
+  svg.classed('ctrl', false);
+}
+
+function modeControlOn()
+{
+  control_mode = true;
+  circle.call(force.drag);
+  svg.classed('ctrl', true);
+}
+
+function getNode(myArray, id )
+{
+  var result = $.grep(myArray, function(e){ return e.id == id; });
+
+  if (result.length == 0) {
+    return false;
+  } else if (result.length == 1) {
+    return result[0]
+  } else {
+    return false; // should be only one item
+  }
+}
+
+$(function(){
+  $.ajax({
+    url: '/nodes',
+    method: 'get',
+    dataType: 'json',
+    success: function(data)
+    {
+      for ( item in data)
+      {
+        nodes.push({
+          id: data[item].id,
+          root: data[item].root,
+          fixed: !dynamic_node_mode || data[item].root,
+          reflexive : false,
+          title: data[item].title,
+          artist: data[item].artist,
+          content: data[item].content,
+          link: data[item].link })
+      }
+    }
+  });
+  $.ajax({
+    url: '/links',
+    method: 'get',
+    dataType: 'json',
+    success: function(data)
+    {
+      for ( item in data)
+      {
+        links.push({
+          source: getNode(nodes, data[item].start_id),
+          target: getNode(nodes, data[item].end_id),
+          left: false,
+          right: false
+        })
+      }
+      initWorld();
+    }
+  });
+})
+
+/*var nodes = [
     {fixed:false, id: 0, reflexive: true, title: 'Love', root:true},
     //{fixed:false, id: 1, reflexive: false, title: 'Something About Us', artist: 'Daft Punk', type: 'music', link: 'http://youtu.be/VapvGNv8lcw'},
     //{fixed:false, id: 2, reflexive: false, title: 'colabor', artist: 'tommy', type: 'video', link:'//www.youtube.com/embed/VapvGNv8lcw'}
   ],
   lastNodeId = 0,
-  links = [
+  //links = [
     //{source: nodes[0], target: nodes[1], left: false, right: true },
     //{source: nodes[1], target: nodes[2], left: false, right: true }
-  ];
-
-// init D3 force layout
-var force = d3.layout.force()
+  //];*/
+var force = null //force world
+var drag_line; 
+var path;
+var circle;
+function initWorld()
+{
+  force = d3.layout.force()
     .nodes(nodes)
     .links(links)
     .size([width, height])
     .linkDistance(link_dist)
-    .charge(-1000)
+    .charge(-500)
+    .gravity(0.5)
+    .linkStrength(2)
+    .theta(0.2)
     .on('tick', tick)
 
 
-// define arrow markers for graph links
-svg.append('svg:defs').append('svg:marker')
-    .attr('id', 'end-arrow')
-    .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 6)
-    .attr('markerWidth', 3)
-    .attr('markerHeight', 3)
-    .attr('orient', 'auto')
-  .append('svg:path')
-    .attr('d', 'M0,-5L10,0L0,5')
-    .attr('fill', '#000');
+  // define arrow markers for graph links
+  /*
+  svg.append('svg:defs').append('svg:marker')
+      .attr('id', 'end-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 6)
+      .attr('markerWidth', 3)
+      .attr('markerHeight', 3)
+      .attr('orient', 'auto')
+    .append('svg:path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#000');
 
-svg.append('svg:defs').append('svg:marker')
-    .attr('id', 'start-arrow')
-    .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 4)
-    .attr('markerWidth', 3)
-    .attr('markerHeight', 3)
-    .attr('orient', 'auto')
-  .append('svg:path')
-    .attr('d', 'M10,-5L0,0L10,5')
-    .attr('fill', '#000');
+  svg.append('svg:defs').append('svg:marker')
+      .attr('id', 'start-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 4)
+      .attr('markerWidth', 3)
+      .attr('markerHeight', 3)
+      .attr('orient', 'auto')
+    .append('svg:path')
+      .attr('d', 'M10,-5L0,0L10,5')
+      .attr('fill', '#000');
+      */
+  // line displayed when dragging new nodes
+  drag_line = svg.append('svg:path')
+    .attr('class', 'link dragline hidden')
+    .attr('d', 'M0,0L0,0');
 
-// line displayed when dragging new nodes
-var drag_line = svg.append('svg:path')
-  .attr('class', 'link dragline hidden')
-  .attr('d', 'M0,0L0,0');
+  // handles to link and node element groups
+  path = svg.append('svg:g').selectAll('path'),
+  circle = svg.append('svg:g').selectAll('g');
 
-// handles to link and node element groups
-var path = svg.append('svg:g').selectAll('path'),
-    circle = svg.append('svg:g').selectAll('g');
+  
+  svg.on('mousedown', mousedown)
+    .on('mousemove', mousemove)
+    .on('mouseup', mouseup);
+  d3.select(window)
+    .on('keydown', keydown)
+    .on('keyup', keyup);
+  restart();
+  releaseAllNodes();
+}
+
+
+
+
 
 // mouse event vars
 var selected_node = null,
@@ -228,19 +358,12 @@ function resetMouseVars() {
   mousedown_link = null;
 }
 
+
+// root centralization
 // update force layout (called automatically each iteration)
 function tick() {
-
   //fix root node
   /*
-    circle.attr('transform', function(d) {
-    if (d.root)
-    {
-      d.x = 480;
-      d.y = 350;
-    }
-    });
-    
  svg.selectAll('circle')
   .attr("cx", function(d){ if (d.root) {return 480;} else {return d.x;} })
   .attr("cy", function(d){ if (d.root) {return 350;} else {return d.y;} })
@@ -252,8 +375,8 @@ function tick() {
         dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
         normX = deltaX / dist,
         normY = deltaY / dist,
-        sourcePadding = d.left ? 17 : 12 ,
-        targetPadding = d.right ? 17 : 12,
+        sourcePadding = d.left ? 12 : 12 ,
+        targetPadding = d.right ? 12 : 12,
         sourceX = d.source.x + (sourcePadding * normX),
         sourceY = d.source.y + (sourcePadding * normY),
         targetX = d.target.x - (targetPadding * normX),
@@ -274,17 +397,17 @@ function restart() {
   path = path.data(links);
 
   // update existing links
-  path.classed('selected', function(d) { return d === selected_link; })
+  /*path.classed('selected', function(d) { return d === selected_link; })
     .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
-    .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; });
+    .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; });*/
 
 
   // add new links
   path.enter().append('svg:path')
     .attr('class', 'link')
     .classed('selected', function(d) { return d === selected_link; })
-    .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
-    .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
+    //.style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
+    //.style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
     .on('mousedown', function(d) {
       if(d3.event.ctrlKey) return;
 
@@ -309,10 +432,10 @@ function restart() {
   circle.selectAll('circle')
     //.style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
     .classed('reflexive', function(d) { return d.reflexive; })
-    .classed('music', function(d) {return d.type == "music"})
-    .classed('drawing',function(d) {return d.type == 'drawing'})
-    .classed('video',function(d){return d.type == 'video'})
-    .classed('novel',function(d){return d.type == 'novel'})
+    .classed('music', function(d) {return d.content == "music"})
+    .classed('drawing',function(d) {return d.content == 'drawing'})
+    .classed('video',function(d){return d.content == 'video'})
+    .classed('novel',function(d){return d.content == 'novel'})
     .classed('root',function(d){return d.root})
 
 
@@ -325,10 +448,10 @@ function restart() {
     //.style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
     //.style('stroke', function(d) { return d3.rgb(colors(d.id)).darker().toString(); })
     .classed('reflexive', function(d) { return d.reflexive; })
-    .classed('music', function(d) {return d.type == "music"})
-    .classed('drawing',function(d) {return d.type == 'drawing'})
-    .classed('video',function(d){return d.type == 'video'})
-    .classed('novel',function(d){return d.type == 'novel'})
+    .classed('music', function(d) {return d.content == "music"})
+    .classed('drawing',function(d) {return d.content == 'drawing'})
+    .classed('video',function(d){return d.content == 'video'})
+    .classed('novel',function(d){return d.content == 'novel'})
     .classed('root',function(d){return d.root})
     .on('mouseover', function(d) {
       if(!mousedown_node || d === mousedown_node) return;
@@ -362,7 +485,7 @@ function restart() {
      
       // reposition drag line
       drag_line
-        .style('marker-end', 'url(#end-arrow)')
+        //.style('marker-end', 'url(#end-arrow)')
         .classed('hidden', false)
         .attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + mousedown_node.x + ',' + mousedown_node.y);
 
@@ -383,24 +506,34 @@ function restart() {
         {
           $("#info_title").text( d.title )
           $("#info_artist").text( d.artist )
-          var type = d.type
-
+          var type = d.content
+          var content;
           if(type == 'drawing')
           {
-            $("#info_content").html( "<img src='"+d.link+"'>")
+            content =( "<img src='"+d.link+"'>")
           }
           else if(type == "music" || type == "video")
           {
-            $("#info_content")
-            .html("<embed width=420 height=345 src='"+d.link+"'></embed>")
+            content =
+            ("<embed width=250 height=142 src='"+d.link+"'></embed>")
           }
           else
           {
-            $("#info_content")
-            .html("<a href='"+d.link+"'>"+d.link+"</a>")
-          }
+            content =
+            ("<a href='"+d.link+"'>"+d.link+"</a>")
+          } 
+          //$("#infopopup").modal("show")
 
-          $("#infopopup").modal("show")
+          if(! control_mode)
+          {
+            $(this).parent().popover({
+              container: "body",
+              html: true,
+              title: d.title,
+              content: content
+            });
+          }
+          //$(this).parent().popover('show');
         }
         
         resetMouseVars(); return; }
@@ -563,7 +696,6 @@ function mouseup() {
         restart();
   */  
 
-
   }
 
   // because :active only works in WebKit?
@@ -657,36 +789,81 @@ var addPoint = null;
 var addStart = null;
 var addEnd = null;
 $("#save_btn").click(function(){
-  var point = addPoint;
-  var node = 
-  {
-    fixed:true,
-    id: ++lastNodeId, 
-    title: $("#node_title").val(),
-    artist: $("#node_artist").val(),
-    type: $("#node_type").val(),
-    link: $("#node_link").val(),
-    root:false
-  }
-  node.x = point[0];
-  node.y = point[1];
-  nodes.push(node);
 
-  var source, target, direction;
+  $.ajax({
+    url: '/nodes',
+    method: 'post',
+    dataType: 'json',
+    data: {
+      title: $("#node_title").val(),
+      artist: $("#node_artist").val(),
+      content: $("#node_type").val(),
+      link: $("#node_link").val(),
+      root:false,
+      parent: addStart.id 
+    },
+    success: function( data )
+    {
+      if( !data.result )
+      {
+        alert("error")
+        return;
+      }
+        
+      var point = addPoint;
+      var node = 
+      {
+        fixed: !dynamic_node_mode,
+        id: data.node.id, 
+        title: $("#node_title").val(),
+        artist: $("#node_artist").val(),
+        content: $("#node_type").val(),
+        link: $("#node_link").val(),
+        root:false
+      }
 
-  source = addStart;//mousedown_node;
-  target = node;
-  direction = 'right';
+      node.x = point[0];
+      node.y = point[1];
+      
 
-  //var link =  links.filter(function(l){
-  //  return (l.source === source && l.target === target);
-  //})[0];
-  var link = {source: source, target: target, left:false, right: false};
-  link[direction] = true;
-  links.push(link);
-  addPoint = null;
-  restart();
-  $("#infobox").modal("hide");
+      var source, target, direction;
+
+      source = addStart;//mousedown_node;
+      target = node;
+      //direction = 'right';
+
+
+      //var link =  links.filter(function(l){
+      //  return (l.source === source && l.target === target);
+      //})[0];
+      //add Link
+      $.ajax({
+        url: '/links',
+        method: 'post',
+        dataType: 'json',
+        data: {
+          start_id: source.id,
+          end_id: target.id
+        },
+        success: function( data )
+        {
+          if( !data.result )
+            return;
+          var link = {source: source, target: target, left:false, right: false};
+          //link[direction] = true;
+          nodes.push(node);
+          links.push(link);
+          addPoint = null;
+          restart();
+          $("#infobox").modal("hide");
+        }
+      })
+      
+    }
+    
+  }) 
+
+
 });
 
 
@@ -698,38 +875,45 @@ $("#infobox").on("show",function(){
 $("#infobox").on("hide", function(){
   drag_line
     .classed('hidden', true)
-    .style('marker-end', '');
+    //.style('marker-end', '');
 
   $("#node_title").val("")
   $("#node_artist").val("")
   $("#node_link").val("")
   $("#node_type").val("")
-  d3.select(window)
-  .on('keydown', keydown)
-  .on('keyup', keyup);
+  //d3.select(window)
+  //.on('keydown', keydown)
+  //.on('keyup', keyup);
 })
 $("#infopopup").on('hide',function(){
   $("#info_content").html("")
 })
 
+
+function releaseAllNodes()
+{
+  circle.selectAll('circle').each( function(d) { 
+    // root should be always fixed;
+    if (d.root)
+    {
+      d.fixed = true;
+    }
+    else
+    {
+      d.fixed = false;
+    }
+    return;
+  })
+  dynamic_node_mode = true;
+}
 function fixAllNodes()
 {
-  circle.selectAll('circle').attr('dummy', function(d) { d.fixed = true; return "aye";})
+  circle.selectAll('circle').each( function(d) { d.fixed = true; return;})
+  dynamic_node_mode = false;
 }
-circle.attr('transform', function(d) {
-  if (d.root)
-  {
-      d.x = 480;
-      d.y = 350;
-  }
-});
-$(function() { setTimeout(fixAllNodes,2000);});
+
+
 // app starts here
-svg.on('mousedown', mousedown)
-  .on('mousemove', mousemove)
-  .on('mouseup', mouseup);
-d3.select(window)
-  .on('keydown', keydown)
-  .on('keyup', keyup);
-restart();
+
+//restart();
 </script>
