@@ -10,7 +10,7 @@ svg {
 }
 
 svg:not(.active):not(.ctrl) {
-  cursor: crosshair;
+  //cursor: crosshair;
 }
 
 path.link {
@@ -40,9 +40,37 @@ circle.node {
   stroke-width: 1.5px;
   cursor: pointer;
 }
+circle.node.root
+{
+  fill:#eee;
+  stroke: #444;
+}
+circle.node.music
+{
+  fill:#FF4040;
+  stroke: #444;
+  
+}
+circle.node.video
+{
+  fill:#0B61A4;
+  stroke: #444;
+  
+}
+circle.node.novel
+{
+  fill:#00B454;
+  stroke: #444;
+  
+}
+circle.node.drawing
+{
+  fill:#FF9401;
+  stroke: #444;
+  
+}
 
 circle.node.reflexive {
-  stroke: #000 !important;
   stroke-width: 2.5px;
 }
 
@@ -61,35 +89,65 @@ text.id {
 <!-- Modal -->
 <div id="infobox" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</a>
     <h3 id="myModalLabel">Add Gongam</h3>
   </div>
   <div class="modal-body">
     <form>
       <label for="title">Title</label>
-      <input class="input-xlarge" type="text" name="title">
+      <input id="node_title" class="input-xlarge" type="text" name="title">
       <label for="artist">Artist</label>
-      <input class="input-xlarge" type="text" name="artist">
+      <input id="node_artist" class="input-xlarge" type="text" name="artist">
       <label for="type">Type</label>
-      <select class="input-xlarge" name="type">
+      <select id="node_type" class="input-xlarge" name="type">
         <option value="drawing">Drawing</option>
         <option value="music">Music</option>
         <option value="video">Video</option>
         <option value="novel">Novel</option>
       </select>
       <label for="link">Link</label>
-      <input class="input-xlarge" type="text" name="link">
+      <input id="node_link" class="input-xlarge" type="text" name="link">
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Save changes</button>
+    <a id="close_btn" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+    <a id="save_btn" class="btn btn-primary">Save changes</a>
+  </div>
+</div>
+
+
+<div id="infopopup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</a>
+    <h3 id="info_title">Information</h3>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div style="height:50px;">
+        <div  class="pull-right">by <span id="info_artist"></span></div>
+      </div>
+
+      <div id="info_content"></div>
+      <span id="info_type"></span>
+      <span id="info_link"></span>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a id="close_btn" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+    <a id="save_btn" class="btn btn-primary">Save changes</a>
   </div>
 </div>
 
 
 <script>
+/*settings*/
+var root_radius = 40;
+var radius = 12;
+var link_dist = 60;
+/**********/
+
 $("#infobox").modal('hide')
+$("#infopopup").modal('hide')
 // set up SVG for D3
 var width  = 960,
     height = 700,
@@ -105,14 +163,14 @@ var svg = d3.select('body')
 //  - reflexive edges are indicated on the node (as a bold black circle).
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
 var nodes = [
-    {id: 0, reflexive: false, title: 'lonelyness', root:true},
-    {id: 1, reflexive: true, title: 'drums' },
-    {id: 2, reflexive: false, title: 'colabor'}
+    {fixed:false, id: 0, reflexive: true, title: 'Love', root:true},
+    //{fixed:false, id: 1, reflexive: false, title: 'Something About Us', artist: 'Daft Punk', type: 'music', link: 'http://youtu.be/VapvGNv8lcw'},
+    //{fixed:false, id: 2, reflexive: false, title: 'colabor', artist: 'tommy', type: 'video', link:'//www.youtube.com/embed/VapvGNv8lcw'}
   ],
-  lastNodeId = 2,
+  lastNodeId = 0,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true },
-    {source: nodes[1], target: nodes[2], left: false, right: true }
+    //{source: nodes[0], target: nodes[1], left: false, right: true },
+    //{source: nodes[1], target: nodes[2], left: false, right: true }
   ];
 
 // init D3 force layout
@@ -120,9 +178,10 @@ var force = d3.layout.force()
     .nodes(nodes)
     .links(links)
     .size([width, height])
-    .linkDistance(50)
+    .linkDistance(link_dist)
     .charge(-1000)
     .on('tick', tick)
+
 
 // define arrow markers for graph links
 svg.append('svg:defs').append('svg:marker')
@@ -171,14 +230,17 @@ function resetMouseVars() {
 
 // update force layout (called automatically each iteration)
 function tick() {
+
+  //fix root node
+  /*
     circle.attr('transform', function(d) {
     if (d.root)
     {
       d.x = 480;
       d.y = 350;
     }
-  });
-    /*
+    });
+    
  svg.selectAll('circle')
   .attr("cx", function(d){ if (d.root) {return 480;} else {return d.x;} })
   .attr("cy", function(d){ if (d.root) {return 350;} else {return d.y;} })
@@ -190,7 +252,7 @@ function tick() {
         dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
         normX = deltaX / dist,
         normY = deltaY / dist,
-        sourcePadding = d.left ? 17 : 12,
+        sourcePadding = d.left ? 17 : 12 ,
         targetPadding = d.right ? 17 : 12,
         sourceX = d.source.x + (sourcePadding * normX),
         sourceY = d.source.y + (sourcePadding * normY),
@@ -242,26 +304,33 @@ function restart() {
   // NB: the function arg is crucial here! nodes are known by id, not by index!
   circle = circle.data(nodes, function(d) { return d.id; });
 
+  
   // update existing nodes (reflexive & selected visual states)
   circle.selectAll('circle')
-    .style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
-    .classed('reflexive', function(d) { return d.reflexive; });
+    //.style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
+    .classed('reflexive', function(d) { return d.reflexive; })
+    .classed('music', function(d) {return d.type == "music"})
+    .classed('drawing',function(d) {return d.type == 'drawing'})
+    .classed('video',function(d){return d.type == 'video'})
+    .classed('novel',function(d){return d.type == 'novel'})
+    .classed('root',function(d){return d.root})
+
 
   // add new nodes
   var g = circle.enter().append('svg:g');
 
   g.append('svg:circle')
     .attr('class', 'node')
-    .attr('r', function(d){ if(d.root) return 24; else {return 12;}})
-    .style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
-    .style('stroke', function(d) { return d3.rgb(colors(d.id)).darker().toString(); })
+    .attr('r', function(d){ if(d.root) return root_radius; else {return radius;}})
+    //.style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
+    //.style('stroke', function(d) { return d3.rgb(colors(d.id)).darker().toString(); })
     .classed('reflexive', function(d) { return d.reflexive; })
+    .classed('music', function(d) {return d.type == "music"})
+    .classed('drawing',function(d) {return d.type == 'drawing'})
+    .classed('video',function(d){return d.type == 'video'})
+    .classed('novel',function(d){return d.type == 'novel'})
+    .classed('root',function(d){return d.root})
     .on('mouseover', function(d) {
-      //$(this).popover({
-      //  container: "body",
-      //  placement: "bottom",
-      //  title: d.id
-      //})
       if(!mousedown_node || d === mousedown_node) return;
       // enlarge target node
       d3.select(this).attr('transform', 'scale(1.1)');
@@ -301,16 +370,42 @@ function restart() {
     })
     .on('mouseup', function(d) {
       if(!mousedown_node) return;
-      // needed by FF
+            // needed by FF
       drag_line
         .classed('hidden', true)
         .style('marker-end', '');
 
       // check for drag-to-self
       mouseup_node = d;
-      if(mouseup_node === mousedown_node) { resetMouseVars(); return; }
+      if(mouseup_node === mousedown_node) {
 
+        if(!d.root)
+        {
+          $("#info_title").text( d.title )
+          $("#info_artist").text( d.artist )
+          var type = d.type
 
+          if(type == 'drawing')
+          {
+            $("#info_content").html( "<img src='"+d.link+"'>")
+          }
+          else if(type == "music" || type == "video")
+          {
+            $("#info_content")
+            .html("<embed width=420 height=345 src='"+d.link+"'></embed>")
+          }
+          else
+          {
+            $("#info_content")
+            .html("<a href='"+d.link+"'>"+d.link+"</a>")
+          }
+
+          $("#infopopup").modal("show")
+        }
+        
+        resetMouseVars(); return; }
+
+    /*
       // unenlarge target node
       d3.select(this).attr('transform', '');
 
@@ -345,11 +440,24 @@ function restart() {
       selected_node = null;
 
       restart();
+      */ //end of mouseup
     })
     .on('mouseover',function(d) {
-      console.log($(this))
-      
+      if (!d.root)
+      {
+        $(this).tooltip({
+        container: "body",
+        title: d.title,
+        })
+        $(this).tooltip("show") 
+      }
     });
+
+  g.append('svg:text')
+    .attr('x', 0)
+    .attr('y', 4)
+    .attr('class', 'id')
+    .text(function(d) { if(d.root) return d.title; else return ""; });
 
   // show node IDs
   /*
@@ -359,6 +467,7 @@ function restart() {
       .attr('class', 'id')
       .text(function(d) { return d.id; });
   */
+  /*
   g.append('svg:text')
       .attr('x', function(d){
         if(d.root)
@@ -378,7 +487,7 @@ function restart() {
         { return "10px";}})
       .attr('font-family','sans-serif')
       .text(function(d) { return d.title; });
-
+  */
   // remove old nodes
   circle.exit().remove();
 
@@ -416,26 +525,25 @@ function mousemove() {
   restart();
 }
 
-function inputdata()
-{
-  $("#infobox").modal("show")
-  var ret = false;
-
-}
 function mouseup() {
   if(mousedown_node) {
     // hide drag line
     
+    /*
     drag_line
       .classed('hidden', true)
       .style('marker-end', '');
+    */
 
+    //var node = inputdata();
+    //justAddedNode = null;
 
-    inputdata();
+    $("#infobox").modal("show")
 
-
-    var point = d3.mouse(this),
-        node = { id: ++lastNodeId, reflexive: false, root: false};
+    var point = d3.mouse(this);
+    addPoint = point;
+    addStart = mousedown_node;
+/*
     node.x = point[0];
     node.y = point[1];
     nodes.push(node);
@@ -452,9 +560,10 @@ function mouseup() {
     var link = {source: source, target: target, left:false, right: false};
     link[direction] = true;
     links.push(link);
-    
+        restart();
+  */  
 
-    restart();
+
   }
 
   // because :active only works in WebKit?
@@ -544,6 +653,77 @@ function keyup() {
   }
 }
 
+var addPoint = null;
+var addStart = null;
+var addEnd = null;
+$("#save_btn").click(function(){
+  var point = addPoint;
+  var node = 
+  {
+    fixed:true,
+    id: ++lastNodeId, 
+    title: $("#node_title").val(),
+    artist: $("#node_artist").val(),
+    type: $("#node_type").val(),
+    link: $("#node_link").val(),
+    root:false
+  }
+  node.x = point[0];
+  node.y = point[1];
+  nodes.push(node);
+
+  var source, target, direction;
+
+  source = addStart;//mousedown_node;
+  target = node;
+  direction = 'right';
+
+  //var link =  links.filter(function(l){
+  //  return (l.source === source && l.target === target);
+  //})[0];
+  var link = {source: source, target: target, left:false, right: false};
+  link[direction] = true;
+  links.push(link);
+  addPoint = null;
+  restart();
+  $("#infobox").modal("hide");
+});
+
+
+$("#infobox").on("show",function(){
+  d3.select(window)
+  .on('keydown', null)
+  .on('keyup', null);
+})
+$("#infobox").on("hide", function(){
+  drag_line
+    .classed('hidden', true)
+    .style('marker-end', '');
+
+  $("#node_title").val("")
+  $("#node_artist").val("")
+  $("#node_link").val("")
+  $("#node_type").val("")
+  d3.select(window)
+  .on('keydown', keydown)
+  .on('keyup', keyup);
+})
+$("#infopopup").on('hide',function(){
+  $("#info_content").html("")
+})
+
+function fixAllNodes()
+{
+  circle.selectAll('circle').attr('dummy', function(d) { d.fixed = true; return "aye";})
+}
+circle.attr('transform', function(d) {
+  if (d.root)
+  {
+      d.x = 480;
+      d.y = 350;
+  }
+});
+$(function() { setTimeout(fixAllNodes,2000);});
 // app starts here
 svg.on('mousedown', mousedown)
   .on('mousemove', mousemove)
