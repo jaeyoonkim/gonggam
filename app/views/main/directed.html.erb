@@ -290,8 +290,8 @@ function initWorld()
     .links(links)
     .size([width, height])
     .linkDistance(link_dist)
-    .charge(-500)
-    .gravity(0.5)
+    .charge(-800)
+    .gravity(0.3)
     .linkStrength(2)
     .theta(0.2)
     .on('tick', tick)
@@ -536,38 +536,59 @@ function restart() {
           //$(this).parent().popover('show');
         }
         
-        resetMouseVars(); return; }
-
-    /*
+        resetMouseVars(); return; 
+      }
+    
       // unenlarge target node
       d3.select(this).attr('transform', '');
 
       // add link to graph (update if exists)
       // NB: links are strictly source < target; arrows separately specified by booleans
       var source, target, direction;
-      if(mousedown_node.id < mouseup_node.id) {
-        source = mousedown_node;
-        target = mouseup_node;
-        direction = 'right';
-      } else {
-        source = mouseup_node;
-        target = mousedown_node;
-        direction = 'left';
-      }
+
+      source = mousedown_node
+      target = mouseup_node
 
       var link;
       link = links.filter(function(l) {
         return (l.source === source && l.target === target);
       })[0];
 
+
+
+      $.ajax({
+        url: '/links',
+        method: 'post',
+        dataType: 'json',
+        data: {
+          start_id: source.id,
+          end_id: target.id
+        },
+        success: function( data )
+        {
+          if( !data.result )
+            return;
+          var link = {source: source, target: target, left:false, right: false};
+          //link[direction] = true;
+          links.push(link);
+          addPoint = null;
+          restart();
+          $("#infobox").modal("hide");
+        }
+      });
+
+/*
+
       if(link) {
         link[direction] = true;
       } else {
         link = {source: source, target: target, left: false, right: false};
-        link[direction] = true;
+        //link[direction] = true;
         links.push(link);
       }
-
+*/
+      restart();
+      /*
       // select new link
       selected_link = link;
       selected_node = null;
@@ -671,6 +692,7 @@ function mouseup() {
     //var node = inputdata();
     //justAddedNode = null;
 
+    if(mouseup_node) return;
     $("#infobox").modal("show")
 
     var point = d3.mouse(this);
@@ -880,7 +902,7 @@ $("#infobox").on("hide", function(){
   $("#node_title").val("")
   $("#node_artist").val("")
   $("#node_link").val("")
-  $("#node_type").val("")
+  $("#node_type").val("drawing")
   //d3.select(window)
   //.on('keydown', keydown)
   //.on('keyup', keyup);
