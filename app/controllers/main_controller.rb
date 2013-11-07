@@ -4,11 +4,19 @@ class MainController < ApplicationController
 	  response.headers['X-Frame-Options'] = "ALLOWALL"
 	end
 	def index
-		render 'index'
+		if !signed_in?
+			render 'index'
+		else
+			render 'directed'
+		end
 	end
 	def directed
 		render 'directed'
 	end
 
+	def login
+		nick = params[:nick]
+		sign_in(nick)
+	end
 
 end

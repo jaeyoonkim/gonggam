@@ -1,149 +1,23 @@
-<style>
-line:hover
-{
-	stroke:purple;
-}
-</style>
-
-<div id="board" class="board">
-
+<div class="no-js modern">
+<div id="circle">
+	<div id="content">
+ 		<h1 title="register">Welcome to gongam</h1>
+ 		<div id="content_inner">
+		 		<p>
+			 		Link your idea.<br/> 
+			 		You can link your idea by drag a cursor to empty space.<br/>
+			 		Link, Collect and Inspire!
+		 		</p>
+			<form id="circle_form" action="/login" method="post">
+				<h3>
+					<label for="u_name">login :</label>
+					<input id="u_name" name="u_name" type="text" placeholder="name" required/>
+				</h3>
+			<div id="enter">
+				<input class="btn" type="submit" name="enter" value="ENTER"/>
+			</div> 
+			</form>
+		</div>
+	</div>
 </div>
-
-
-
-<!--<canvas id="viewport" width="960px" height="680px"></canvas>-->
-
-<script>
-var svgBoard = null;
-$(function(){
-	init()
-	addNode(480,350)
-	addEdge(480,350,600,600)
-});
-function init()
-{
-	svgBoard = d3.select("#board")
-	.append("svg")
-	.attr("width", 960)
-	.attr("height",700)
-
-}
-function addNode(x, y)
-{
-	svgBoard
-	.append("circle")
-	.attr("cx",x)
-	.attr("cy",y)
-	.attr("r",25)
-	.style("fill","purple")
-}
-
-function addEdge(x1,y1,x2,y2)
-{
-	svgBoard
-	.append("line")
-	.attr("x1",x1)
-	.attr("y1",y1)
-	.attr("x2",x2)
-	.attr("y2",y2)
-	.attr("stroke-width",5)
-	.attr("stroke","gray")
-}
-/*
-(function($){
-	DeadSimpleRenderer = function(canvas){
-		var canvas = $(canvas).get(0);
-		var ctx = canvas.getContext("2d");
-		var pSys = null;
-		var root = null;
-		var lastNode = null;
-		var lastPoint = null;
-		var that = 
-		{
-			init:function(system)
-			{
-				pSys = system;
-				pSys.screenSize(canvas.width, canvas.height);
-				pSys.screenPadding(80);
-
-				var handler =
-				{
-
-					clicked:function(e)
-					{
-						var point = arbor.Point(e.offsetX, e.offsetY)
-						var nearest = pSys.nearest(point)
-						if ( !nearest.node ) return false;
-						root = nearest.node;
-						$(canvas).bind("mouseup", handler.released)
-					},
-
-					released:function(e)
-					{
-						var pos = $(canvas).offset();
-						var point = arbor.Point(e.pageX - pos.left, e.pageY - pos.top);
-						var newNode = pSys.addNode(point.x, {topic: false, label:"newNode", mass: 5})
-
-						console.log(point)
-						newNode.p = point;
-						pSys.addEdge(root, newNode, {length: 10})
-						//newNode.p = point
-						console.log("release")
-						root = null;
-						
-					
-						$(canvas).unbind("mouseup")
-						lastNode = newNode;
-						lastPoint = point;
-						newNode = null;
-					}
-				}
-				$(canvas).bind("mousedown", handler.clicked);
-			},
-			redraw:function(system)
-			{
-				if (lastNode)
-				{
-					lastNode.p = lastPoint;
-					//lastNode = null;
-				}
-
-				ctx.clearRect(0,0, canvas.width, canvas.height)
-				pSys.eachEdge(function(edge,p1,p2){
-					ctx.strokeStyle = "black"
-					ctx.lineWidth = 2
-					ctx.beginPath()
-					ctx.moveTo(p1.x + 10, p1.y + 10)
-					ctx.lineTo(p2.x + 10, p2.y + 10)
-					ctx.stroke()
-					ctx.closePath()
-				});
-				pSys.eachNode(function(node, pt){
-					ctx.font = "20px serif"
-					ctx.fillStyle = "black"
-					ctx.fillText(node.data.label,pt.x +10, pt.y -10)
-					ctx.fillRect(pt.x, pt.y, 30, 30)
-				
-				// node: {mass:#, p:{x,y}, name:"", data:{}}
-				// pt:   {x:#, y:#}  node position in screen coords
-					
-				});
-			}
-		}
-
-		return that
-	}
-
-	$(document).ready(function()
-	{
-		var sys = arbor.ParticleSystem(1000,500,1,false);
-		sys.renderer = DeadSimpleRenderer("#viewport");
-		
-		node = sys.addNode("Lonelyness", { fixed: true, mass: 10000, topic:true, label: 'Animal',alpha:1 });
-
-	});
-
-
-})(this.jQuery);
-*/
-</script>
+</div>

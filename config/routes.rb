@@ -29,7 +29,8 @@ Gongam::Application.routes.draw do
 
   get '/canvas' => 'main#index'
   get '/dge' => 'main#directed'
-  # Sample resource route with sub-resources:
+  post '/login' => 'main#login'
+# Sample resource route with sub-resources:
   #   resources :products do
   #     resources :comments, :sales
   #     resource :seller
