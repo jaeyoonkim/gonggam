@@ -8,7 +8,7 @@ module MainHelper
 	end
 
 	def signed_in?
-		!current_user.nil? and !(current_user == "")
+		not cookies[:user].nil? and not cookies[:user] ==""
 	end
 
 	def sign_out

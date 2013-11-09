@@ -10,6 +10,7 @@ class MainController < ApplicationController
 			render 'directed'
 		end
 	end
+
 	def directed
 		render 'directed'
 	end
@@ -17,6 +18,12 @@ class MainController < ApplicationController
 	def login
 		nick = params[:nick]
 		sign_in(nick)
+		redirect_to '/canvas'
+	end
+
+	def logout
+		sign_out
+		redirect_to '/canvas'
 	end
 
 end
