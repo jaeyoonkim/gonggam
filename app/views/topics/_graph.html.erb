@@ -247,7 +247,7 @@ function getNode(myArray, id )
   }
 }
 
-$(function(){
+$(window).ready(function(){
   $.ajax({
     url: '/topics/<%=@topic.id%>/nodes',
     method: 'get',
