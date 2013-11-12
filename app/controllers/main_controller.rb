@@ -7,7 +7,11 @@ class MainController < ApplicationController
 		if !signed_in?
 			render 'index'
 		else
-			redirect_to topic_path(Topic.first)
+			if Topic.count == 0
+				redirect_to '/topics'
+			else
+				redirect_to topic_path(Topic.first)
+			end
 		end
 	end
 
