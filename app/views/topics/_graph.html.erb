@@ -358,6 +358,8 @@ function initWorld()
     .on('keyup', keyup);
   restart();
   releaseAllNodes();
+  releaseRoot();
+  setTimeout(fixRoot,1000)
 }
 
 
@@ -952,6 +954,29 @@ function releaseAllNodes()
     return;
   })
   dynamic_node_mode = true;
+}
+function releaseRoot()
+{
+  circle.selectAll('circle').each( function(d) { 
+    // root should be always fixed;
+    if (d.root)
+    {
+      d.fixed = false;
+    }
+    return;
+  });
+}
+function fixRoot()
+{
+  circle.selectAll('circle').each( function(d) { 
+    // root should be always fixed;
+    if (d.root)
+    {
+      d.fixed = true;
+
+    }
+    return;
+  }); 
 }
 function fixAllNodes()
 {
