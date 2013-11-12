@@ -1,0 +1,13 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <h1>Topic: <%= @topic.topic %></h1>
+</p>
+
+
+<%= render 'graph' %>
+
+<a class="btn btn-large" href="/topics">Show Other Topics</a>
+<!--
+<%= link_to 'Edit', edit_topic_path(@topic) %> |
+<%= link_to 'Back', topics_path %>-->

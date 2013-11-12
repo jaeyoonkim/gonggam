@@ -39,7 +39,7 @@ path.link.hidden {
 }
 
 circle.node {
-  stroke-width: 1.5px;
+  stroke-width:m o 1.5px;
   cursor: pointer;
 }
 circle.node.root
@@ -121,21 +121,40 @@ text.id {
     <h3 id="myModalLabel">Add Gongam</h3>
   </div>
   <div class="modal-body">
-    <form>
+    <div class="span3">
+      <form>
       <label for="title">Title</label>
-      <input id="node_title" class="input-xlarge" type="text" name="title">
+      <input id="node_title" class="input-large" type="text" name="title">
       <label for="artist">Artist</label>
-      <input id="node_artist" class="input-xlarge" type="text" name="artist">
+      <input id="node_artist" class="input-large" type="text" name="artist">
       <label for="type">Type</label>
-      <select id="node_type" class="input-xlarge" name="type">
+      <select id="node_type" class="input-large" name="type">
         <option value="drawing">Drawing</option>
         <option value="music">Music</option>
         <option value="video">Video</option>
         <option value="novel">Novel</option>
       </select>
       <label for="link">Link</label>
-      <input id="node_link" class="input-xlarge" type="text" name="link">
-    </form>
+      <input id="node_link" class="input-large" type="text" name="link">    
+      </form>
+    </div>
+    <div class="span2">
+      Preview <br> <br>
+      <div style="background:#eee; text-align:center; height:200px; line-height:200px;width:200px" id="preview">Drag Image</div></div>
+      
+<script>
+  $(document).on('dragover', function(e) {
+     e.preventDefault();
+});
+  $(document).on('drop', function(e) {
+    e.preventDefault();
+    e.originalEvent.dataTransfer.items[0].getAsString(function(url){
+      $("#node_link").val(url);
+      $("#preview").html("<img src='"+url+"'>").css("background","#fff")
+    });
+});
+  </script>
+    
   </div>
   <div class="modal-footer">
     <a id="close_btn" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
@@ -230,7 +249,7 @@ function getNode(myArray, id )
 
 $(function(){
   $.ajax({
-    url: '/nodes',
+    url: '/topics/<%=@topic.id%>/nodes',
     method: 'get',
     dataType: 'json',
     success: function(data)
@@ -250,7 +269,7 @@ $(function(){
     }
   });
   $.ajax({
-    url: '/links',
+    url: '/topics/<%=@topic.id%>/links',
     method: 'get',
     dataType: 'json',
     success: function(data)
@@ -508,6 +527,7 @@ function restart() {
           $("#info_artist").text( d.artist )
           var type = d.content
           var content;
+          /*
           if(type == 'drawing')
           {
             content =( "<img src='"+d.link+"'>")
@@ -521,7 +541,9 @@ function restart() {
           {
             content =
             ("<a href='"+d.link+"'>"+d.link+"</a>")
-          } 
+          } */
+
+          content = d.link
           //$("#infopopup").modal("show")
 
           if(! control_mode)
@@ -562,7 +584,8 @@ function restart() {
         dataType: 'json',
         data: {
           start_id: source.id,
-          end_id: target.id
+          end_id: target.id,
+          topic_id: <%= @topic.id %>
         },
         success: function( data )
         {
@@ -822,7 +845,8 @@ $("#save_btn").click(function(){
       content: $("#node_type").val(),
       link: $("#node_link").val(),
       root:false,
-      parent: addStart.id 
+      parent: addStart.id ,
+      topic_id: <%= @topic.id %>
     },
     success: function( data )
     {
@@ -840,7 +864,7 @@ $("#save_btn").click(function(){
         title: $("#node_title").val(),
         artist: $("#node_artist").val(),
         content: $("#node_type").val(),
-        link: $("#node_link").val(),
+        link: data.node.link,
         root:false
       }
 
@@ -865,7 +889,8 @@ $("#save_btn").click(function(){
         dataType: 'json',
         data: {
           start_id: source.id,
-          end_id: target.id
+          end_id: target.id,
+          topic_id: <%= @topic.id %>
         },
         success: function( data )
         {

@@ -1,4 +1,7 @@
 Gongam::Application.routes.draw do
+  resources :topics
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -31,6 +34,9 @@ Gongam::Application.routes.draw do
   get '/dge' => 'main#directed'
   post '/login' => 'main#login'
   get '/logout' => 'main#logout'
+  get '/topics/:id/links' => 'topics#links'
+  get '/topics/:id/nodes' => 'topics#nodes'
+  root :to => 'main#index'
 # Sample resource route with sub-resources:
   #   resources :products do
   #     resources :comments, :sales

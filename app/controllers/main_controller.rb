@@ -7,7 +7,7 @@ class MainController < ApplicationController
 		if !signed_in?
 			render 'index'
 		else
-			render 'directed'
+			redirect_to topic_path(Topic.first)
 		end
 	end
 
@@ -24,6 +24,11 @@ class MainController < ApplicationController
 	def logout
 		sign_out
 		redirect_to '/canvas'
+	end
+
+	def topics
+		@topics = Node.find(:all, :conditions => {:root => true})
+		render 'topics'
 	end
 
 end

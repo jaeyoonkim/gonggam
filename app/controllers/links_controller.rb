@@ -2,7 +2,8 @@ class LinksController < ApplicationController
 	def create
 		link = Link.new(
 			:start_id => params[:start_id],
-			:end_id => params[:end_id])
+			:end_id => params[:end_id],
+			:topic_id => params[:topic_id])
 
 		if link.save
 			render :json => {result:true, link:link}
