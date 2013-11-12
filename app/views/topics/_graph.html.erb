@@ -266,26 +266,27 @@ $(window).ready(function(){
           content: data[item].content,
           link: data[item].link })
       }
+      $.ajax({
+        url: '/topics/<%=@topic.id%>/links',
+        method: 'get',
+        dataType: 'json',
+        success: function(data)
+        {
+          for ( item in data)
+          {
+            links.push({
+              source: getNode(nodes, data[item].start_id),
+              target: getNode(nodes, data[item].end_id),
+              left: false,
+              right: false
+            })
+          }
+          initWorld();
+        }
+      });
     }
   });
-  $.ajax({
-    url: '/topics/<%=@topic.id%>/links',
-    method: 'get',
-    dataType: 'json',
-    success: function(data)
-    {
-      for ( item in data)
-      {
-        links.push({
-          source: getNode(nodes, data[item].start_id),
-          target: getNode(nodes, data[item].end_id),
-          left: false,
-          right: false
-        })
-      }
-      initWorld();
-    }
-  });
+  
 })
 
 /*var nodes = [
