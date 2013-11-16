@@ -5,12 +5,12 @@ class MainController < ApplicationController
 	end
 	def index
 		if !signed_in?
-			render 'index'
+			render 'index', :layout => 'without_navbar'
 		else
 			if Topic.count == 0
 				redirect_to '/topics'
 			else
-				redirect_to topic_path(Topic.first)
+				redirect_to topic_path(Topic.all.sample(1)[0])
 			end
 		end
 	end

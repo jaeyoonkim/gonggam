@@ -2,7 +2,7 @@ class NodesController < ApplicationController
 	def create
 
 		innerdata = ""
-		if(params[:content] == "drawing")
+		if(params[:content] == "image")
 			innerdata = "<a target=_blank href="+params[:link]+"><img width=250px src='"+params[:link]+"'></a>"
 		elsif(params[:content] == "video" or params[:content] == "music")
 			begin
@@ -10,10 +10,10 @@ class NodesController < ApplicationController
 	    		embed_data = o.gets
 	    		innerdata = embed_data["html"]
 			rescue OhEmbedr::UnsupportedError => error
-	   			innerdata = "<a href="+params[:link]+">"+params[:link]+"</a>"# URL not supported
+	   			innerdata = "<a target=_blank href="+params[:link]+">"+params[:link]+"</a>"# URL not supported
 			end
 		else
-			innerdata = "<a href="+params[:link]+">"+params[:link]+"</a>"
+			innerdata = "<a target=_blank href="+params[:link]+">"+params[:link]+"</a>"
 		end
 		node = Node.new(
 			:root => params[:root],

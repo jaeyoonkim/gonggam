@@ -1,25 +1,23 @@
-<div class="no-js modern">
 <div id="circle">
 	<div id="content">
- 		<h1 title="register">Welcome to gongam</h1>
+ 		<div id="intro_title" style="font-family: 'Poiret One', cursive;"><%= image_tag("logo_white.svg") %>  gonggam</div>	<!--edit by jaeyoon-->
  		<div id="content_inner">
 		 		<p>
-			 		Link your idea.<br/> 
-			 		You can link your idea by drag a cursor to empty space.<br/>
+			 		Link your idea.<br>
+			 		You can link your idea by drag a cursor to empty space.<br> <br>
 			 		Link, Collect and Inspire!
 		 		</p>
 			<form id="circle_form" action="/login" method="post">
-				<h3>
-					<label for="nick">login :</label>
-					<input id="nick" name="nick" type="text" placeholder="name" required/>
-				</h3>
+				<div id="name_box"></div>
+					name :
+					<input id="nick" name="nick" type="text" placeholder="name" required="">
+				</div>
 			<div id="enter">
-				<input class="btn" type="submit" name="enter" value="ENTER"/>
+				<input class="btn" type="submit" name="enter" value="ENTER">
 			</div> 
 			</form>
 		</div>
 	</div>
-</div>
 </div>
 
 

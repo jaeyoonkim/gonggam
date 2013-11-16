@@ -1,123 +1,52 @@
-<style>
-.world {
-  border: 1px solid #eee;
-}
-svg {
-  background-color: #fff;
-  cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-svg:not(.active):not(.ctrl) {
-  //cursor: crosshair;
-}
-
-path.link {
-  fill: none;
-  stroke: #000;
-  stroke-width: 2px;
-  cursor: default;
-}
-
-svg:not(.active):not(.ctrl) path.link {
-  cursor: pointer;
-}
-
-path.link.selected {
-  stroke-dasharray: 10,2;
-}
-
-path.link.dragline {
-  pointer-events: none;
-}
-
-path.link.hidden {
-  stroke-width: 0;
-}
-
-circle.node {
-  stroke-width:m o 1.5px;
-  cursor: pointer;
-}
-circle.node.root
-{
-  fill:#eee;
-  stroke: #444;
-}
-circle.node.music
-{
-  fill:#FF4040;
-  stroke: #444;
+<div class="navbar navbar-fixed-bottom">
+  <div class="navbar-inner">
+    <div class="container">
+      <div class="brand">
+        <%= @topic.topic %>
+      </div>
+      
+        <!-- Button to trigger modal -->
+      <!-- Modal -->
+      <div class="pull-right">
+        <a class="btn btn-inverse" href="javascript:modeControlOn();" id="control_btn_on">drawing:on</a>
+        <a class="btn" href="javascript:modeControlOff();" id="control_btn_off">drawing:off</a>
+        <a class="btn" href="javascript:releaseAllNodes();" id="release_btn_on">dynamic:off</a>
+        <a class="btn btn-inverse" href="javascript:fixAllNodes();" id="release_btn_off">dynamic:on</a>
+        <a id="other_topics" class="btn" href="/topics"><i class="icon-align-justify"></i></a>
+        <a id="random_topic" class="btn" href="/topics/<%= @next_topic_id %>"><i class="icon-refresh"></i></a>
+      </div>
+      <script>
+        $("#control_btn_off").hide();
+        $("#control_btn_on").click(function(){
+          $(this).hide();
+          $("#control_btn_off").show();
+        })
+        $("#control_btn_off").click(function(){
+          $(this).hide();
+          $("#control_btn_on").show();
+        })
+        $("#release_btn_on").hide();
+        $("#release_btn_on").click(function(){
+          $(this).hide();
+          $("#release_btn_off").show();
+        })
+        $("#release_btn_off").click(function(){
+          $(this).hide();
+          $("#release_btn_on").show();
+        })
+        $("#other_topics").tooltip({title:"see other topics"});
+        $("#random_topic").tooltip({title:"random topic"});
+      </script>
+    </div>
+  </div>
   
-}
-circle.node.video
-{
-  fill:#0B61A4;
-  stroke: #444;
   
-}
-circle.node.novel
-{
-  fill:#00B454;
-  stroke: #444;
-  
-}
-circle.node.drawing
-{
-  fill:#FF9401;
-  stroke: #444;
-  
-}
-
-circle.node.reflexive {
-  stroke-width: 2.5px;
-}
-
-text {
-  font: 12px sans-serif;
-  pointer-events: none;
-}
-
-text.id {
-  text-anchor: middle;
-  font-weight: bold;
-}
-</style>
-
-<!-- Button to trigger modal -->
-<!-- Modal -->
-<a class="btn btn-large" href="javascript:modeControlOn();" id="control_btn_on">Control:Off</a>
-<a class="btn btn-large btn-danger" href="javascript:modeControlOff();" id="control_btn_off">Control:On</a>
-<a class="btn btn-large" href="javascript:releaseAllNodes();" id="release_btn_on">Dynamic Nodes:Off</a>
-<a class="btn btn-large btn-danger" href="javascript:fixAllNodes();" id="release_btn_off">Dynamic Nodes:On</a>
-<script>
-  $("#control_btn_off").hide();
-  $("#control_btn_on").click(function(){
-    $(this).hide();
-    $("#control_btn_off").show();
-  })
-  $("#control_btn_off").click(function(){
-    $(this).hide();
-    $("#control_btn_on").show();
-  })
-  $("#release_btn_on").hide();
-  $("#release_btn_on").click(function(){
-    $(this).hide();
-    $("#release_btn_off").show();
-  })
-  $("#release_btn_off").click(function(){
-    $(this).hide();
-    $("#release_btn_on").show();
-  })
-</script>
+</div>
 <div class="world" id="world"></div>
 
 <div id="infobox" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</a>
+    <a type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove icon-white"></i></a>
     <h3 id="myModalLabel">Add Gongam</h3>
   </div>
   <div class="modal-body">
@@ -129,18 +58,18 @@ text.id {
       <input id="node_artist" class="input-large" type="text" name="artist">
       <label for="type">Type</label>
       <select id="node_type" class="input-large" name="type">
-        <option value="drawing">Drawing</option>
+        <option value="image">Image</option>
         <option value="music">Music</option>
         <option value="video">Video</option>
-        <option value="novel">Novel</option>
+        <option value="writting">Writting</option>
       </select>
       <label for="link">Link</label>
       <input id="node_link" class="input-large" type="text" name="link">    
       </form>
     </div>
-    <div class="span2">
+    <div class="span3">
       Preview <br> <br>
-      <div style="background:#eee; text-align:center; height:200px; line-height:200px;width:200px" id="preview">Drag Image</div></div>
+      <div class="preview" id="preview">Drag Image</div></div>
       
 <script>
   $(document).on('dragover', function(e) {
@@ -158,7 +87,7 @@ text.id {
   </div>
   <div class="modal-footer">
     <a id="close_btn" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-    <a id="save_btn" class="btn btn-primary">Save changes</a>
+    <a id="save_btn" class="btn btn-inverse">Save</a>
   </div>
 </div>
 
@@ -188,7 +117,7 @@ text.id {
 
 <script>
 /*settings*/
-var root_radius = 40;
+var root_radius = 20;
 var radius = 12;
 var link_dist = 60;
 /**********/
@@ -196,8 +125,8 @@ var link_dist = 60;
 $("#infobox").modal('hide')
 $("#infopopup").modal('hide')
 // set up SVG for D3
-var width  = 900,
-    height = 500,
+var width  = 940,
+    height = 600,
     colors = d3.scale.category10();
 
 var svg = d3.select('#world')
@@ -455,9 +384,9 @@ function restart() {
     //.style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
     .classed('reflexive', function(d) { return d.reflexive; })
     .classed('music', function(d) {return d.content == "music"})
-    .classed('drawing',function(d) {return d.content == 'drawing'})
+    .classed('image',function(d) {return d.content == 'image'})
     .classed('video',function(d){return d.content == 'video'})
-    .classed('novel',function(d){return d.content == 'novel'})
+    .classed('writting',function(d){return d.content == 'writting'})
     .classed('root',function(d){return d.root})
 
 
@@ -471,9 +400,9 @@ function restart() {
     //.style('stroke', function(d) { return d3.rgb(colors(d.id)).darker().toString(); })
     .classed('reflexive', function(d) { return d.reflexive; })
     .classed('music', function(d) {return d.content == "music"})
-    .classed('drawing',function(d) {return d.content == 'drawing'})
+    .classed('image',function(d) {return d.content == 'image'})
     .classed('video',function(d){return d.content == 'video'})
-    .classed('novel',function(d){return d.content == 'novel'})
+    .classed('writting',function(d){return d.content == 'writting'})
     .classed('root',function(d){return d.root})
     .on('mouseover', function(d) {
       if(!mousedown_node || d === mousedown_node) return;
@@ -531,7 +460,7 @@ function restart() {
           var type = d.content
           var content;
           /*
-          if(type == 'drawing')
+          if(type == 'image')
           {
             content =( "<img src='"+d.link+"'>")
           }
@@ -554,9 +483,16 @@ function restart() {
             $(this).parent().popover({
               container: "body",
               html: true,
-              title: d.title,
+              title: d.title+"<a id='close_popover_"+d.id+"'' class='close' type='button'><i class='icon-remove'></i></a>",
               content: content
-            });
+            });//.show();
+
+            var popover_to_close = $(this).parent();
+            setTimeout( function(){
+              $("#close_popover_"+d.id).click(function(){
+                popover_to_close.popover('hide');
+              });
+            }, 500);
           }
           //$(this).parent().popover('show');
         }
@@ -637,7 +573,7 @@ function restart() {
     .attr('x', 0)
     .attr('y', 4)
     .attr('class', 'id')
-    .text(function(d) { if(d.root) return d.title; else return ""; });
+    //.text(function(d) { if(d.root) return d.title; else return ""; });
 
   // show node IDs
   /*
@@ -930,7 +866,8 @@ $("#infobox").on("hide", function(){
   $("#node_title").val("")
   $("#node_artist").val("")
   $("#node_link").val("")
-  $("#node_type").val("drawing")
+  $("#node_type").val("image")
+  $("#preview").html("Drag Image").css("background","#eee")
   //d3.select(window)
   //.on('keydown', keydown)
   //.on('keyup', keyup);

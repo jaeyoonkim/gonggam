@@ -1,98 +1,29 @@
-@import "reset.css";
-@charset "utf-8";
-/* =Global Classes */
-.clearfix:after {
-  content: "";
-  display: block;
-  clear: both;
+#circle{position:absolute;top:50%;left:50%;width:500px;min-height:500px;
+margin-top:-250px;margin-left:-250px;background:#06c0f3;
+-webkit-box-shadow:inset 0px 0px 3px #cdcdcd;-moz-box-shadow:inset 0px 0px 3px #cdcdcd;
+box-shadow:inset 0px 0px 3px #cdcdcd;-webkit-border-radius:50%;-khtml-border-radius:50%;-moz-border-radius:50%;border-radius:50%;
+background-color: #2e2c2a;}
+#content{position:relative;margin-top:100px;text-align:center}#content_inner{margin-top:50px}#circle_form{margin-top:50px;margin-left:-50px}
+#circle h3 input{width:10em;padding:1em 0.5em 1em 2.5em;background:#f8f8f8 url(./u_icons_splite.png) no-repeat 0 4px;-webkit-box-shadow:inset 0px 0px 4px 0px #06c0f3;border-radius:5px}#circle h3 input:focus{width:15em;background-color:#fff}#circle #u_name{background-position:0 4px}#circle #u_name:focus{background-position:0 -24px}#enter{position:absolute;top:50%;left:50%;width:100px;height:100px;margin-top:-50px;margin-left:-50px;margin-top:170px}
+
+#content{
+  color: white;
 }
-.ie6 .clearfix {
-  height: 1px;
+body{
+  font-family: 'Poiret One', cursive;
+  background-color:rgb(245,240,235);
+  font-weight: 100;
 }
-.ie7 .clearfix {
-  min-height: 1px;
+p, input{
+  font-family: sans-serif;
 }
-.blind {
-  visibility: hidden;
-  position: absolute;
-  top: -10000px;
-  height: 1px;
-  width: 1px;
+input{
+  width: 150px;
 }
-html,
-body {
-  height: 100%;
+input#nick{
+  margin-left: 10px;
 }
-html {
-  overflow-y: scroll;
-}
-body {
-  font-family: 'Share Tech', sans-serif;
-}
-p{
-	line-height:170%;
-	font-size: 1.2em;
-}
-#circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 500px;
-  min-height: 500px;
-  margin-top: -250px;
-  margin-left: -250px;
-  border: 1px solid #06c0f3;
-  background: #06c0f3;
-  -webkit-box-shadow: inset 0px 0px 3px #cdcdcd;
-  -moz-box-shadow: inset 0px 0px 3px #cdcdcd;
-  box-shadow: inset 0px 0px 3px #cdcdcd;
-  -webkit-border-radius: 50%;
-  -khtml-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  background: -webkit-linear-gradient(0deg, #06c0f3, #00c8ff 2px, #05c4f8 5px, rgba(255, 255, 255, 0.8) 67%);
-  background: -moz-linear-gradient(0deg, #06c0f3, #00c8ff 2px, #05c4f8 5px, rgba(255, 255, 255, 0.8) 67%);
-  background: -ms-linear-gradient(0deg, #06c0f3, #00c8ff 2px, #05c4f8 5px, rgba(255, 255, 255, 0.8) 67%);
-  background: -o-linear-gradient(0deg, #06c0f3, #00c8ff 2px, #05c4f8 5px, rgba(255, 255, 255, 0.8) 67%);
-  background: linear-gradient(0deg, #06c0f3, #00c8ff 2px, #05c4f8 5px, rgba(255, 255, 255, 0.8) 67%);
-}
-#content {
-  position: relative;
-  margin-top: 100px;
-  text-align: center;
-}
-#content_inner{
-	margin-top:  50px;
-}
-#circle_form{
-	margin-top:  50px;
-	margin-left: -50px;
-}
-#circle h3 input{
-	width: 10em;
-	border: 1px solid #06c0f3;
-	padding: 1em 0.5em 1em 2.5em;
-	background: #f8f8f8 url(./u_icons_splite.png) no-repeat 0 4px;
-	-webkit-box-shadow: inset 0px 0px 4px 0px #06c0f3;
-	border-radius:5px;
-}
-#circle h3 input:focus{
-	width: 15em;
-	background-color: #fff;
-}
-#circle #u_name{
-	background-position: 0 4px;
-}
-#circle #u_name:focus{
-	background-position: 0 -24px;
-}
-#enter{
-	position:  absolute;
-	top:  50%;
-	left:  50%;
-	width: 100px;
-	height:100px;
-	margin-top: -50px;
-	margin-left:-50px;
-	margin-top: 170px;
+
+#intro_title{
+  font-size: 2em;
 }
