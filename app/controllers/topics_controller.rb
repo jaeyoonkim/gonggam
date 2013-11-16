@@ -14,8 +14,11 @@ class TopicsController < ApplicationController
   # GET /topics/1.json
   def show
     @topic = Topic.find(params[:id])
-    @next_topic_id = Topic.find(:all, :conditions => [ 'id != ?', params[:id] ]).sample(1)[0].id
-
+    if(Topic.count > 1)
+      @next_topic_id = Topic.find(:all, :conditions => [ 'id != ?', params[:id] ]).sample(1)[0].id
+    else
+      @next_topic_id = params[:id]
+    end
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @topic }
