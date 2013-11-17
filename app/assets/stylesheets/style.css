@@ -27,3 +27,8 @@ input#nick{
 #intro_title{
   font-size: 2em;
 }
+
+.popover
+{
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}

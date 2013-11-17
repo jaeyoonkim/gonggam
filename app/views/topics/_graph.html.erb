@@ -64,7 +64,9 @@
         <option value="writting">Writting</option>
       </select>
       <label for="link">Link</label>
-      <input id="node_link" class="input-large" type="text" name="link">    
+      <input id="node_link" class="input-large" type="text" name="link"> 
+      <label for="decription">Description</label>
+      <textarea id="node_description" name="description"></textarea>
       </form>
     </div>
     <div class="span3">
@@ -91,7 +93,7 @@
   </div>
 </div>
 
-
+<!--
 <div id="infopopup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</a>
@@ -113,7 +115,7 @@
     <a id="save_btn" class="btn btn-primary">Save changes</a>
   </div>
 </div>
-
+-->
 
 <script>
 /*settings*/
@@ -193,7 +195,8 @@ $(window).ready(function(){
           title: data[item].title,
           artist: data[item].artist,
           content: data[item].content,
-          link: data[item].link })
+          link: data[item].link,
+          description: data[item].description})
       }
       $.ajax({
         url: '/topics/<%=@topic.id%>/links',
@@ -458,24 +461,33 @@ function restart() {
           $("#info_title").text( d.title )
           $("#info_artist").text( d.artist )
           var type = d.content
-          var content;
+          var info;
           /*
           if(type == 'image')
           {
-            content =( "<img src='"+d.link+"'>")
+            info =( "<img src='"+d.link+"'>")
           }
           else if(type == "music" || type == "video")
           {
-            content =
+            info =
             ("<embed width=250 height=142 src='"+d.link+"'></embed>")
           }
           else
           {
-            content =
+            info =
             ("<a href='"+d.link+"'>"+d.link+"</a>")
           } */
 
-          content = d.link
+          info = d.link
+
+          info += "<br><br>"
+          info += "<b>Title:</b> "+d.title+"<br>"
+          info += "<b>Artist:</b> "+d.artist+"<br>"
+          info += "<b>Type:</b> "+d.content+"<br>"
+          info += "<b>Description:</b> <br>"
+          info += d.description
+
+
           //$("#infopopup").modal("show")
 
           if(! control_mode)
@@ -484,7 +496,7 @@ function restart() {
               container: "body",
               html: true,
               title: d.title+"<a id='close_popover_"+d.id+"'' class='close' type='button'><i class='icon-remove'></i></a>",
-              content: content
+              content: info
             });//.show();
 
             var popover_to_close = $(this).parent();
@@ -783,6 +795,7 @@ $("#save_btn").click(function(){
       artist: $("#node_artist").val(),
       content: $("#node_type").val(),
       link: $("#node_link").val(),
+      description: $("#node_description").val(),
       root:false,
       parent: addStart.id ,
       topic_id: <%= @topic.id %>
@@ -804,7 +817,8 @@ $("#save_btn").click(function(){
         artist: $("#node_artist").val(),
         content: $("#node_type").val(),
         link: data.node.link,
-        root:false
+        root:false,
+        description: $("#node_description").val(),
       }
 
       node.x = point[0];
@@ -866,6 +880,7 @@ $("#infobox").on("hide", function(){
   $("#node_title").val("")
   $("#node_artist").val("")
   $("#node_link").val("")
+  $("#node_description").val("")
   $("#node_type").val("image")
   $("#preview").html("Drag Image").css("background","#eee")
   //d3.select(window)

@@ -6,7 +6,7 @@ $navbarBrandColor: black;
 
 @import "bootstrap";
 
-.popover-title { height: 18px;}
+
 .modal-header
 {
 	background-color: #2e2c2a;
@@ -53,4 +53,12 @@ body
 	padding-bottom:10px;
 	a { color: black; }
 	a:hover { text-decoration: none;}
+}
+
+.popover
+{
+	width: 250px;
+	.popover-title { height: 18px;}
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	.popover-content { word-break: break-all;}
 }
