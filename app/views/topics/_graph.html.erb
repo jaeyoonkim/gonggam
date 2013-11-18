@@ -504,6 +504,7 @@ function restart() {
               $("#close_popover_"+d.id).click(function(){
                 popover_to_close.popover('hide');
               });
+              $(".popover").draggable();
             }, 500);
           }
           //$(this).parent().popover('show');
