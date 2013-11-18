@@ -3,7 +3,11 @@
     <div class="container">
       <div class="brand">
         <%= @topic.topic %>
+        
       </div>
+      <div class="subbrand"><%= @topic.description %></div>
+
+
       
         <!-- Button to trigger modal -->
       <!-- Modal -->
@@ -67,6 +71,7 @@
       <input id="node_link" class="input-large" type="text" name="link"> 
       <label for="decription">Description</label>
       <textarea id="node_description" name="description"></textarea>
+      <input id="node_user_nick" name="user_nick" type="hidden" value="<%= current_user %>">
       </form>
     </div>
     <div class="span3">
@@ -196,7 +201,8 @@ $(window).ready(function(){
           artist: data[item].artist,
           content: data[item].content,
           link: data[item].link,
-          description: data[item].description})
+          description: data[item].description,
+          user_nick: data[item].user_nick })
       }
       $.ajax({
         url: '/topics/<%=@topic.id%>/links',
@@ -479,13 +485,13 @@ function restart() {
           } */
 
           info = d.link
-
-          info += "<br><br>"
+          info += "<div style='height:20px;'><div class='pull-right'> by "+d.user_nick+"</div></div>"
           info += "<b>Title:</b> "+d.title+"<br>"
           info += "<b>Artist:</b> "+d.artist+"<br>"
           info += "<b>Type:</b> "+d.content+"<br>"
           info += "<b>Description:</b> <br>"
-          info += d.description
+          info += d.description+"<br>"
+          
 
 
           //$("#infopopup").modal("show")
@@ -797,6 +803,7 @@ $("#save_btn").click(function(){
       content: $("#node_type").val(),
       link: $("#node_link").val(),
       description: $("#node_description").val(),
+      user_nick: $("#node_user_nick").val(),
       root:false,
       parent: addStart.id ,
       topic_id: <%= @topic.id %>
@@ -820,6 +827,7 @@ $("#save_btn").click(function(){
         link: data.node.link,
         root:false,
         description: $("#node_description").val(),
+        user_nick: $("#node_user_nick").val(),
       }
 
       node.x = point[0];

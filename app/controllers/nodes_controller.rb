@@ -23,7 +23,8 @@ class NodesController < ApplicationController
 			:content => params[:content],
 			:link => innerdata,
 			:topic_id => params[:topic_id],
-			:description => params[:description]
+			:description => params[:description],
+			:user_nick => params[:user_nick]
 			)
 
 		if node.save

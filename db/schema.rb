@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131117064903) do
+ActiveRecord::Schema.define(:version => 20131118153712) do
 
   create_table "links", :force => true do |t|
     t.integer  "start_id"
@@ -32,12 +32,14 @@ ActiveRecord::Schema.define(:version => 20131117064903) do
     t.datetime "updated_at",  :null => false
     t.integer  "topic_id"
     t.text     "description"
+    t.string   "user_nick"
   end
 
   create_table "topics", :force => true do |t|
     t.text     "topic"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "description"
   end
 
 end
