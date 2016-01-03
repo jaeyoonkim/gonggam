@@ -31,6 +31,7 @@ Gongam::Application.configure do
   config.force_ssl = true
 
   # See everything in the log (default is :info)
+  config.log_level = :info
   # config.log_level = :debug
 
   # Prepend all log lines with the following tags
