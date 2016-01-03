@@ -1,4 +1,8 @@
 Gongam::Application.routes.draw do
+  # get 'login' => 'sessions#new'
+  # post 'login' => 'sessions#create'
+  # delete 'logout'  => 'sessions#destroy'
+
   resources :users
 
 
@@ -35,8 +39,9 @@ Gongam::Application.routes.draw do
 
   get '/canvas' => 'main#index'
   get '/dge' => 'main#directed'
-  post '/login' => 'main#login'
-  get '/logout' => 'main#logout'
+  get '/login' => 'sessions#new'
+  post '/login' => 'sessions#create'
+  delete '/logout' => 'sessions#destroy'
   get '/topics/:id/links' => 'topics#links'
   get '/topics/:id/nodes' => 'topics#nodes'
   root :to => 'main#index'

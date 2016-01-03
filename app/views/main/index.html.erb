@@ -7,7 +7,7 @@
 			 		You can link your idea by drag a cursor to empty space.<br> <br>
 			 		Link, Collect and Inspire!
 		 		</p>
-			<form id="circle_form" action="/login" method="post">
+			<!-- <form id="circle_form" action="/login" method="post">
 				<div id="name_box"></div>
 					name :
 					<input id="nick" name="nick" type="text" placeholder="name" required="">
@@ -16,7 +16,22 @@
 				<input class="btn" type="submit" name="enter" value="ENTER" style="float: left;">
 				<%= link_to "signin", new_user_path(), class: 'btn', style: "float: left; color: black; margin-left: 5px;" %>
 			</div>
-			</form>
+			</form> -->
+
+			<%=form_for(:session, :url => login_path, id:"circle_form") do |f|%>
+          <div class="row">
+            <div class="login-form">
+              <!--[if lte IE 9]>이메일<br><![endif]-->
+              <%= f.text_field :email, :placeholder => "이메일"%>
+              <!--[if lte IE 9]>비밀번호<br><![endif]-->
+              <%= f.password_field :password, :placeholder => "비밀번호" %><br>
+              <div class="row login-button">
+                <%= f.submit "로그인", class: 'btn btn-primary' %>
+                <%= link_to "회원가입", new_user_path, class: "btn btn-primary", id: "signup_button" %>
+              </div>
+            </div>
+          </div><!-- row -->
+       <% end %>
 		</div>
 	</div>
 </div>

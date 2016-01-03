@@ -4,7 +4,7 @@ class MainController < ApplicationController
 	  response.headers['X-Frame-Options'] = "ALLOWALL"
 	end
 	def index
-		if !signed_in?
+		if !logged_in?
 			render 'index', :layout => 'without_navbar'
 		else
 			if Topic.count == 0
@@ -19,16 +19,16 @@ class MainController < ApplicationController
 		render 'directed'
 	end
 
-	def login
-		nick = params[:nick]
-		sign_in(nick)
-		redirect_to '/canvas'
-	end
-
-	def logout
-		sign_out
-		redirect_to '/canvas'
-	end
+	# def login
+	# 	nick = params[:nick]
+	# 	sign_in(nick)
+	# 	redirect_to '/canvas'
+	# end
+	#
+	# def logout
+	# 	sign_out
+	# 	redirect_to '/canvas'
+	# end
 
 	def topics
 		@topics = Node.find(:all, :conditions => {:root => true})

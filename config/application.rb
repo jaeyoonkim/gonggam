@@ -7,6 +7,9 @@ if defined?(Bundler)
   Bundler.require(*Rails.groups(:assets => %w(development test)))
   # If you want your assets lazily compiled in production, use this line
   # Bundler.require(:default, :assets, Rails.env)
+  # 모든 컨트롤러에서 helper 참조하기
+  config.action_controller.include_all_helpers = true
+
 end
 
 module Gongam
@@ -61,6 +64,5 @@ module Gongam
     }
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
-
   end
 end
