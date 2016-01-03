@@ -4,7 +4,7 @@ margin-top:-250px;margin-left:-250px;background:#06c0f3;
 box-shadow:inset 0px 0px 3px #cdcdcd;-webkit-border-radius:50%;-khtml-border-radius:50%;-moz-border-radius:50%;border-radius:50%;
 background-color: #2e2c2a;}
 #content{position:relative;margin-top:100px;text-align:center}#content_inner{margin-top:50px}#circle_form{margin-top:50px;margin-left:-50px}
-#circle h3 input{width:10em;padding:1em 0.5em 1em 2.5em;background:#f8f8f8 url(./u_icons_splite.png) no-repeat 0 4px;-webkit-box-shadow:inset 0px 0px 4px 0px #06c0f3;border-radius:5px}#circle h3 input:focus{width:15em;background-color:#fff}#circle #u_name{background-position:0 4px}#circle #u_name:focus{background-position:0 -24px}#enter{position:absolute;top:50%;left:50%;width:100px;height:100px;margin-top:-50px;margin-left:-50px;margin-top:170px}
+#circle h3 input{width:10em;padding:1em 0.5em 1em 2.5em;background:#f8f8f8 url(./u_icons_splite.png) no-repeat 0 4px;-webkit-box-shadow:inset 0px 0px 4px 0px #06c0f3;border-radius:5px}#circle h3 input:focus{width:15em;background-color:#fff}#circle #u_name{background-position:0 4px}#circle #u_name:focus{background-position:0 -24px}#enter{position:absolute;top:50%;left:50%;height:100px;margin-top:-50px;margin-left:-50px;margin-top:170px}
 
 #content{
   color: white;

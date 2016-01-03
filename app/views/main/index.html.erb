@@ -13,8 +13,9 @@
 					<input id="nick" name="nick" type="text" placeholder="name" required="">
 				</div>
 			<div id="enter">
-				<input class="btn" type="submit" name="enter" value="ENTER">
-			</div> 
+				<input class="btn" type="submit" name="enter" value="ENTER" style="float: left;">
+				<%= link_to "signin", new_user_path(), class: 'btn', style: "float: left; color: black; margin-left: 5px;" %>
+			</div>
 			</form>
 		</div>
 	</div>
